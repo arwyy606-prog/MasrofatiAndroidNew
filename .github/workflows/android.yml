@@ -1,10 +1,11 @@
+
 name: Build Masrofati APK
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - '*.zip'
+      - '*_fixed.zip'
       - '.github/workflows/android.yml'
 
 jobs:
@@ -14,14 +15,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Find and extract Android project
+      - name: Extract project
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -type f -name '*.zip' | head -n 1)
+          ZIP_FILE=$(find . -maxdepth 1 -name '*_fixed.zip' -type f | head -n 1)
           if [ -z "$ZIP_FILE" ]; then
-            echo "No ZIP project file found in repository root."
+            echo "Project ZIP not found"
             exit 1
           fi
-          echo "Extracting: $ZIP_FILE"
           unzip -o "$ZIP_FILE"
 
       - name: Setup Java
@@ -36,7 +36,7 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build APK
-        run: gradle -p MasrofatiAndroid assembleDebug
+        run: gradle --no-daemon --stacktrace -p MasrofatiAndroid assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
