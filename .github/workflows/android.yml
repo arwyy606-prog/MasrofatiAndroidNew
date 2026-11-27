@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '**.zip'
+      - 'MasrofatiAndroid_Project_fixed(4).zip'
       - '.github/workflows/android.yml'
 
 jobs:
@@ -16,15 +16,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Find and extract project
+      - name: Extract project
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -name '*.zip' | head -n 1)
-          if [ -z "$ZIP_FILE" ]; then
-            echo "ZIP file not found"
-            exit 1
-          fi
-          unzip -q "$ZIP_FILE" -d extracted
-          PROJECT_DIR=$(find extracted -type f -name 'gradlew' -printf '%h\n' | head -n 1)
+          unzip -q 'MasrofatiAndroid_Project_fixed(4).zip' -d .
+          PROJECT_DIR=$(find . -type f -name 'gradlew' -not -path './.git/*' | head -n 1 | xargs dirname)
           if [ -z "$PROJECT_DIR" ]; then
             echo "Android project not found"
             exit 1
